@@ -1,0 +1,1 @@
+# dogecoin-miner-rust
