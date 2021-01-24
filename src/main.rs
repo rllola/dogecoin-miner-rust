@@ -145,12 +145,12 @@ fn main() {
         block.extend_from_slice(&nonce.to_le_bytes());
         
         //let count = buffer.iter().rev().take_while(|b| **b == 0).count();
-        let _target = hex::decode(block_template["result"]["target"].as_str().unwrap()).unwrap();
+        let target = hex::decode(block_template["result"]["target"].as_str().unwrap()).unwrap();
         
         let mut scrypt_hash : [u8;32] = [255;32];
         
         // Could do better here
-        while scrypt_hash[0] > 0 || scrypt_hash[1] > 0 || scrypt_hash[2] > 15 {       
+        while hex::encode(&scrypt_hash) > hex::encode(&target) {       
             nonce = nonce + 1;
             
             block.truncate(block.len()-4);
