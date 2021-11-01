@@ -1,0 +1,50 @@
+version: "3.2"
+
+services:
+  litecoind-alpha:
+    build: provision/litecoind/.
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.2
+    volumes:
+      - type: bind
+        source: ./provision/litecoind/litecoin.conf
+        target: /root/.litecoin/litecoin.conf
+
+  litecoind-beta:
+    build: provision/litecoind/.
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.3
+    volumes:
+      - type: bind
+        source: ./provision/litecoind/litecoin.conf
+        target: /root/.litecoin/litecoin.conf
+
+  dogecoind-alpha:
+    build: provision/dogecoind/.
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.4
+    volumes:
+      - type: bind
+        source: ./provision/dogecoind/dogecoin.conf
+        target: /root/.dogecoin/dogecoin.conf
+
+  dogecoind-beta:
+    build: provision/dogecoind/.
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.5
+    volumes:
+      - type: bind
+        source: ./provision/dogecoind/dogecoin.conf
+        target: /root/.dogecoin/dogecoin.conf
+
+        
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16

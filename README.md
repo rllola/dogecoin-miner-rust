@@ -12,12 +12,34 @@ $ cargo build --release
 
 You will find your executable `miner-rust` under `target/release/`.
 
-Create a `.env` file next to your executable with the info to connect to your Dogecoin RPC testnet node.
+Create a `miner.toml` file next to your executable with the info to connect to your Dogecoin RPC node and/or Litecoin node.
 
-Example of `.env` file:
+Example of `miner.toml` file:
+```toml
+mergemining = true
+
+[dogecoin]
+ip = "127.0.0.1"
+port = 44555
+user = "kek"
+password = "kek"
+
+[litecoin]
+ip = "127.0.0.1"
+port = 19332
+user = "kek"
+password = "kek"
 ```
-127.0.0.1
-44555
-username
-password
+
+## Dev
+
+To setup your dev environnement with your regtest nodes you will need `docker` and `docker-compose` installed.
+
+```bash
+$ make up
+```
+
+And stop kill it
+```bash
+$ make down
 ```
