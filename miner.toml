@@ -1,0 +1,13 @@
+mergemining = true
+
+[dogecoin]
+ip = "10.5.0.4"
+port = 18332
+user = "satoshi"
+password = "amiens"
+
+[litecoin]
+ip = "10.5.0.2"
+port = 19443
+user = "satoshi"
+password = "amiens"

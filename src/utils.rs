@@ -68,9 +68,40 @@ pub fn scrypt_hasher(block: &Vec<u8>) -> [u8;32] {
     scrypt_hash
 }
 
+pub fn coinbase_merkle_links(merkle_tree: &Vec<[u8;32]>) -> Vec<[u8;32]> {
+    let mut tmp : Vec<[u8;32]> = Vec::new();
+    tmp.extend_from_slice(merkle_tree);
+
+    let mut coinbase_merkle_proofs : Vec<[u8;32]> = Vec::new();
+    coinbase_merkle_proofs.push(tmp[0].clone());
+
+    while tmp.len() > 1 {
+        let mut new_merkle_tree : Vec<[u8;32]> = Vec::new();
+        coinbase_merkle_proofs.push(tmp[1].clone());
+
+        if tmp.len() % 2 == 1 {
+            let mut last : [u8;32] = [0;32];
+            last.copy_from_slice(tmp.last().unwrap());
+            tmp.push(last);
+        }
+        
+        for x in (0..tmp.len()).step_by(2) {
+            let mut concat_hash : Vec<u8> = Vec::new();
+            concat_hash.extend_from_slice(&tmp[x]);
+            concat_hash.extend_from_slice(&tmp[x+1]);
+            let hash = double_hash_256(&concat_hash);
+            new_merkle_tree.push(hash);
+        }
+        
+        tmp = Vec::new();
+        tmp.extend_from_slice(&new_merkle_tree);
+    }
+    coinbase_merkle_proofs
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{calculate_merkle_root, scrypt_hasher, double_hash_256};
+    use super::{calculate_merkle_root, scrypt_hasher, double_hash_256, coinbase_merkle_links};
     
     #[test]
     fn test_calculate_merkle_root() {
@@ -229,6 +260,50 @@ mod tests {
         txid.reverse();
                 
         assert_eq!(hex::encode(txid), "39114237793101c42ead607f9f7e0edbf400f8d2e659ec3aca6fe35388017483");
+    }
+
+    #[test]
+    fn test_coinbase_merkle_links() {
+        let hashes : Vec<String> = vec![
+            "a335b243f5e343049fccac2cf4d70578ad705831940d3eef48360b0ea3829ed4".into(),
+            "d5fd11cb1fabd91c75733f4cf8ff2f91e4c0d7afa4fd132f792eacb3ef56a46c".into(),
+            "0441cb66ef0cbf78c9ecb3d5a7d0acf878bfdefae8a77541b3519a54df51e7fd".into(),
+            "1a8a27d690889b28d6cb4dacec41e354c62f40d85a7f4b2d7a54ffc736c6ff35".into(),
+            "1d543d550676f82bf8bf5b0cc410b16fc6fc353b2a4fd9a0d6a2312ed7338701".into(),
+        ];
+
+        let mut merkle_tree : Vec<[u8;32]> = Vec::new();
+        for txid in hashes {
+            let mut tmp : [u8;32] = [0;32];
+            let mut hash = hex::decode(&txid).unwrap();
+            hash.reverse();
+            tmp.copy_from_slice(&hash);
+            merkle_tree.push(tmp);
+        }
+        
+        let mut coinbase_merkle_links = coinbase_merkle_links(&merkle_tree);
+
+        // Calculate proof
+
+        let mut concat_hash_01 : Vec<u8> = Vec::new();
+        concat_hash_01.extend_from_slice(&coinbase_merkle_links[0]);
+        concat_hash_01.extend_from_slice(&coinbase_merkle_links[1]);
+        let hash_01 = double_hash_256(&concat_hash_01);
+
+        let mut concat_hash_02 : Vec<u8> = Vec::new();
+        concat_hash_02.extend_from_slice(&hash_01);
+        concat_hash_02.extend_from_slice(&coinbase_merkle_links[2]);
+        let hash_02 = double_hash_256(&concat_hash_02);
+
+        let mut concat_hash_03 : Vec<u8> = Vec::new();
+        concat_hash_03.extend_from_slice(&hash_02);
+        concat_hash_03.extend_from_slice(&coinbase_merkle_links[3]);
+        let hash_03 = double_hash_256(&concat_hash_03);
+
+
+        let merkle_root = calculate_merkle_root(&merkle_tree);
+
+        assert_eq!(hash_03, merkle_root);
     }
     
 }
