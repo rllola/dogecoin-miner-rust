@@ -170,44 +170,12 @@ pub fn merge_mine(config: &Config) {
     let litecoin_config = config.litecoin.as_ref().unwrap();
     let litecoin_url = format!("http://{}:{}", litecoin_config.ip, litecoin_config.port);
 
-    // Get block template from node
-    //let dogecoin_block_template: serde_json::Value = rpc::get_block_template(&dogecoin_url, &config.dogecoin.user, &config.dogecoin.password, None);
-
     let dogecoin_aux_block_template: serde_json::Value = rpc::get_aux_block(&dogecoin_url, &config.dogecoin.user, &config.dogecoin.password);
-    println!("{:?}", dogecoin_aux_block_template);
-
-    /*
-        PREPARE DOGECOIN HEADER
-    */
 
     /* Create Dogecoin coinbase transaction */
-    //let dogecoin_coinbase_tx = create_coinbase_tx(&dogecoin_block_template);
     let dogecoin_coinbase_tx = create_coinbase_tx(&dogecoin_aux_block_template);
     /* Calculate Dogecoin txid */
     let dogecoin_coinbase_txid = double_hash_256(&dogecoin_coinbase_tx);
-
-    /* Create dogecoin merkleroot */
-    /*let mut dogecoin_merkle_tree : Vec<[u8;32]> = Vec::new();
-    
-    dogecoin_merkle_tree.push(dogecoin_coinbase_txid);
-
-    for x in dogecoin_block_template["result"]["transactions"].as_array().unwrap().iter() {
-        let mut txid : [u8;32] = [0; 32];
-        txid.copy_from_slice(&hex::decode(x["txid"].as_str().unwrap()).unwrap());
-        txid.reverse();
-        dogecoin_merkle_tree.push(txid);
-    }
-    
-    /* Calculate Dogecoin merkleroot */
-    let mut dogecoin_merkle_root = dogecoin_coinbase_txid;
-    
-    if dogecoin_merkle_tree.len() > 1 {
-        dogecoin_merkle_root = calculate_merkle_root(&dogecoin_merkle_tree);
-    }
-
-    let mut dogecoin_header = create_blockheader(&dogecoin_block_template, dogecoin_merkle_root);
-    let mut dogecoin_sha256_hash = double_hash_256(&dogecoin_header);*/
-
     let mut dogecoin_sha256_hash = hex::decode(&dogecoin_aux_block_template["result"]["hash"].as_str().unwrap()).unwrap();
 
     /*
@@ -219,6 +187,7 @@ pub fn merge_mine(config: &Config) {
 
     /* Create parent block coinbase transaction */
     let mut litecoin_coinbase_tx : Vec<u8> = Vec::new();
+    // TODO: using version from get_block_template
     let version = hex::decode("01000000").unwrap();
     litecoin_coinbase_tx.extend_from_slice(&version);
 
@@ -304,16 +273,13 @@ pub fn merge_mine(config: &Config) {
 
     let mut litecoin_blockheader = create_blockheader(&litecoin_block_template, litecoin_merkle_root);
 
-    //let count = buffer.iter().rev().take_while(|b| **b == 0).count();
     let litecoin_target = hex::decode(litecoin_block_template["result"]["target"].as_str().unwrap()).unwrap();
-    //let dogecoin_target = hex::decode(dogecoin_block_template["result"]["target"].as_str().unwrap()).unwrap();
     let mut dogecoin_target = hex::decode(dogecoin_aux_block_template["result"]["target"].as_str().unwrap()).unwrap();
     // ONLY REVERVE FOR AUX BLOCK
     dogecoin_target.reverse();
 
     let mut litecoin_scrypt_hash : [u8;32] = [255;32];
     
-    // Could do better here
     let mut nonce = 0_u32;
     while hex::encode(&litecoin_scrypt_hash) > hex::encode(&litecoin_target) || hex::encode(&litecoin_scrypt_hash) > hex::encode(&dogecoin_target) {       
         nonce = nonce + 1;
@@ -357,7 +323,6 @@ pub fn merge_mine(config: &Config) {
     println!("Found Dogecoin valid block");
 
     let mut dogecoin_block : Vec<u8> = Vec::new();
-    //dogecoin_block.extend_from_slice(&dogecoin_header);
 
     // Extend with litecoin coinbase transaction
     dogecoin_block.extend_from_slice(&litecoin_coinbase_tx);
@@ -386,28 +351,15 @@ pub fn merge_mine(config: &Config) {
     // Adding litecoin block hearder
     dogecoin_block.extend_from_slice(&litecoin_blockheader);
 
-    // We hash the header... but we need this to submit block
-    /*let len_transactions = compact_size(dogecoin_block_template["result"]["transactions"].as_array().unwrap().len()+1);
-    dogecoin_block.extend_from_slice(&len_transactions);
-        
-    // Add coinbase
-    dogecoin_block.extend_from_slice(&dogecoin_coinbase_tx);
-            
-    for x in dogecoin_block_template["result"]["transactions"].as_array().unwrap().iter() {
-        dogecoin_block.extend_from_slice(&hex::decode(x["data"].as_str().unwrap()).unwrap());
-    }
-    */
 
     let block_hex : String = hex::encode(&dogecoin_block);
 
-    // Reverse before encoding
-    /*dogecoin_sha256_hash.reverse();
-    let block_id : String = hex::encode(&dogecoin_sha256_hash);*/
     let block_id : String = dogecoin_aux_block_template["result"]["hash"].as_str().unwrap().to_string();
     
     println!("{:?}", block_id);
     println!("{:?}", block_hex);
 
+    // AuxPow Block can only be submitted using getauxblock ?
     let answer = rpc::submit_aux_block(block_id, block_hex, &dogecoin_url, &config.dogecoin.user, &config.dogecoin.password);
 
     println!("{:?}", answer);
