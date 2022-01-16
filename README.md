@@ -43,3 +43,16 @@ And stop kill it
 ```bash
 $ make down
 ```
+
+## Troubleshooting
+
+### Openssl error
+
+```
+  run pkg_config fail: "`\"pkg-config\" \"--libs\" \"--cflags\" \"openssl\"` did not exit successfully: exit status: 1\n--- stderr\nPackage openssl was not found in the pkg-config search path.\nPerhaps you should add the directory containing `openssl.pc'\nto the PKG_CONFIG_PATH environment variable\nNo package 'openssl' found\n"
+```
+
+You need to install `libssl-dev`.
+```
+$ apt install libssl-dev
+```
