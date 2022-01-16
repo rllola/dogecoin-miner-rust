@@ -281,7 +281,7 @@ mod tests {
             merkle_tree.push(tmp);
         }
         
-        let mut coinbase_merkle_links = coinbase_merkle_links(&merkle_tree);
+        let coinbase_merkle_links = coinbase_merkle_links(&merkle_tree);
 
         // Calculate proof
 

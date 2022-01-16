@@ -175,8 +175,8 @@ pub fn merge_mine(config: &Config) {
     /* Create Dogecoin coinbase transaction */
     let dogecoin_coinbase_tx = create_coinbase_tx(&dogecoin_aux_block_template);
     /* Calculate Dogecoin txid */
-    let dogecoin_coinbase_txid = double_hash_256(&dogecoin_coinbase_tx);
-    let mut dogecoin_sha256_hash = hex::decode(&dogecoin_aux_block_template["result"]["hash"].as_str().unwrap()).unwrap();
+    let _dogecoin_coinbase_txid = double_hash_256(&dogecoin_coinbase_tx);
+    let dogecoin_sha256_hash = hex::decode(&dogecoin_aux_block_template["result"]["hash"].as_str().unwrap()).unwrap();
 
     /*
         PREPARE LITECOIN BLOCK
