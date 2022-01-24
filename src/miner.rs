@@ -7,7 +7,7 @@ use crate::utils::{compact_size, calculate_merkle_root, scrypt_hasher, double_ha
 use crate::rpc;
 
 /* Create coinbase transaction */
-fn create_coinbase_tx(block_template: &serde_json::Value) -> Vec<u8> {
+fn create_coinbase_tx(block_template: &serde_json::Value, pubkeyhash: &Vec<u8>) -> Vec<u8> {
     let mut coinbase_tx : Vec<u8> = Vec::new();
     let version = hex::decode("01000000").unwrap();
     coinbase_tx.extend_from_slice(&version);
@@ -49,9 +49,11 @@ fn create_coinbase_tx(block_template: &serde_json::Value) -> Vec<u8> {
     let value = block_template["result"]["coinbasevalue"].as_i64().unwrap();
     coinbase_tx.extend_from_slice(&value.to_le_bytes());
     
-    // Send to nbMFaHF9pjNoohS4fD1jefKBgDnETK9uPu
-    /* TODO: address in config file */
-    let script_out_data = hex::decode("76a9144e810ea0600b308d58589a7d2df76317dfe6b5cf88ac").unwrap();
+    /* 76a914<pubkeyhash>88ac */
+    let mut script_out_data = vec![118, 169, 20];
+    script_out_data.extend_from_slice(pubkeyhash);
+    script_out_data = [script_out_data, vec![136, 172]].concat();
+
     coinbase_tx.push(script_out_data.len() as u8);
     coinbase_tx.extend_from_slice(&script_out_data);
     
@@ -92,13 +94,13 @@ fn create_blockheader(block_template: &serde_json::Value, merkle_root: [u8;32]) 
     return blockheader;
 }
 
-pub fn mine(config: &Config) {
+pub fn mine(config: &Config, pubkeyhash: &Vec<u8>) {
     let dogecoin_url = format!("http://{}:{}", config.dogecoin.ip, config.dogecoin.port);
 
     // Get block template from node
     let block_template: serde_json::Value = rpc::get_block_template(&dogecoin_url, &config.dogecoin.user, &config.dogecoin.password, None);
     
-    let coinbase_tx = create_coinbase_tx(&block_template);
+    let coinbase_tx = create_coinbase_tx(&block_template, pubkeyhash);
     
     /* Calculate txid */
     let coinbase_txid = double_hash_256(&coinbase_tx);
@@ -165,7 +167,7 @@ pub fn mine(config: &Config) {
     println!("{:?}", answer);    
 }
 
-pub fn merge_mine(config: &Config) {
+pub fn merge_mine(config: &Config, pubkeyhash: &Vec<u8>) {
     let dogecoin_url = format!("http://{}:{}", config.dogecoin.ip, config.dogecoin.port);
     let litecoin_config = config.litecoin.as_ref().unwrap();
     let litecoin_url = format!("http://{}:{}", litecoin_config.ip, litecoin_config.port);
@@ -173,7 +175,7 @@ pub fn merge_mine(config: &Config) {
     let dogecoin_aux_block_template: serde_json::Value = rpc::get_aux_block(&dogecoin_url, &config.dogecoin.user, &config.dogecoin.password);
 
     /* Create Dogecoin coinbase transaction */
-    let dogecoin_coinbase_tx = create_coinbase_tx(&dogecoin_aux_block_template);
+    let dogecoin_coinbase_tx = create_coinbase_tx(&dogecoin_aux_block_template, pubkeyhash);
     /* Calculate Dogecoin txid */
     let _dogecoin_coinbase_txid = double_hash_256(&dogecoin_coinbase_tx);
     let dogecoin_sha256_hash = hex::decode(&dogecoin_aux_block_template["result"]["hash"].as_str().unwrap()).unwrap();
