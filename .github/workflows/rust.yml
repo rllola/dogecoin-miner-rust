@@ -26,6 +26,7 @@ jobs:
         rustup component add rust-src
         set RUST_BACKTRACE=1
         set RUSTFLAGS=-C target-feature=+crt-static
+      shell: cmd
     - name: Run tests
       run: cargo test --verbose
     - name: Build
