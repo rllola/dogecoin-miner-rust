@@ -20,6 +20,9 @@ jobs:
     steps:
     - name: Checkout Repo 
       uses: actions/checkout@v2
+    - name: Install cygwin
+      if: runner.os == 'Windows'
+      uses: cygwin/cygwin-install-action@master
     - name: Run tests
       run: cargo test --verbose
     - name: Build
