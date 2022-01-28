@@ -17,6 +17,7 @@ Create a `miner.toml` file next to your executable with the info to connect to y
 Example of `miner.toml` file:
 ```toml
 mergemining = true
+address = "nbMFaHF9pjNoohS4fD1jefKBgDnETK9uPu"
 
 [dogecoin]
 ip = "127.0.0.1"
