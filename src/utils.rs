@@ -1,5 +1,7 @@
 // Way faster with c bindings version !!!
 use rust_scrypt;
+use std::result::Result;
+use koibumi_base58 as base58;
 
 pub fn double_hash_256(message: &Vec<u8>) -> [u8;32] {
     let tmp = hmac_sha256::Hash::hash(&message);
@@ -99,9 +101,15 @@ pub fn coinbase_merkle_links(merkle_tree: &Vec<[u8;32]>) -> Vec<[u8;32]> {
     coinbase_merkle_proofs
 }
 
+pub fn address_to_pubkeyhash(address: &String) -> Result<Vec<u8>, base58::InvalidCharacter> {
+    let tmp = base58::decode(address)?;
+    
+    Ok(tmp[1..21].to_vec())
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{calculate_merkle_root, scrypt_hasher, double_hash_256, coinbase_merkle_links};
+    use super::{calculate_merkle_root, scrypt_hasher, double_hash_256, coinbase_merkle_links, address_to_pubkeyhash};
     
     #[test]
     fn test_calculate_merkle_root() {
@@ -304,6 +312,16 @@ mod tests {
         let merkle_root = calculate_merkle_root(&merkle_tree);
 
         assert_eq!(hash_03, merkle_root);
+    }
+
+    #[test]
+    fn test_address_to_pubkeyhash() {
+        let address = String::from("nbMFaHF9pjNoohS4fD1jefKBgDnETK9uPu");        
+        let result = address_to_pubkeyhash(&address).unwrap();
+
+        let expect = hex::decode("4e810ea0600b308d58589a7d2df76317dfe6b5cf").unwrap();
+
+        assert_eq!(result, expect);
     }
     
 }

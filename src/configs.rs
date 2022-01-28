@@ -14,6 +14,7 @@ pub struct ConfigRPC {
 #[derive(Deserialize)]
 pub struct Config {
     pub mergemining: bool,
+    pub address: String,
     pub dogecoin: ConfigRPC,
     pub litecoin: Option<ConfigRPC>,
 }
