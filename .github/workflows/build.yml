@@ -9,8 +9,27 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  release:
+    name: Create Release
+    
+    steps:
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: true
 
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+  build:
+    name: Build Artefacts
+    needs: release
+    
     strategy:
       fail-fast: false
       matrix:
@@ -31,22 +50,13 @@ jobs:
       run: cargo build --release --locked
     - name: Create Archive
       run: tar -czf ${{ matrix.asset_name }}.tar.gz ./target/release/miner-rust
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: true
+
     - name: Upload Release Asset
-      id: upload-release-asset 
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        upload_url: ${{ needs.release.outputs.upload_url }}
         asset_path: ./${{ matrix.asset_name }}.tar.gz
         asset_name: ${{ matrix.asset_name }}.tar.gz
         asset_content_type: application/gzip 
