@@ -1,0 +1,30 @@
+name: Run tests
+
+on:
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout Repo 
+      uses: actions/checkout@v2
+    - name: Run tests
+      run: cargo test --verbose
+    - name: Build
+      run: cargo build --release --locked
+    - name: Create Archive
+      run: tar -czf dogecoin-miner-rust-${{ matrix.os }}.tar.gz ./target/release/miner-rust
+    - name: Check if archive exist
+      run: ls
