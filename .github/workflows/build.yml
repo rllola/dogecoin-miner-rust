@@ -37,9 +37,9 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            asset_name: dogeocin-miner-rust-linux-amd64
+            asset_name: dogecoin-miner-rust-linux-amd64
           - os: macos-latest
-            asset_name: dogeocin-miner-rust-macos-amd64
+            asset_name: dogecoin-miner-rust-macos-amd64
 
     runs-on: ${{ matrix.os }}
 
