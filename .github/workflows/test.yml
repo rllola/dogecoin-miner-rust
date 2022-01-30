@@ -1,0 +1,25 @@
+name: Run tests
+
+on:
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    name: Tests
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout Repo 
+      uses: actions/checkout@v2
+    - name: Run tests
+      run: cargo test --verbose
