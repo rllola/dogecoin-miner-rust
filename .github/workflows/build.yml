@@ -1,8 +1,9 @@
 name: Build and create release
 
 on:
-  repository_dispatch:
-    types: [tag-created]
+  push:
+    tags:
+      - '*'
 
 env:
   CARGO_TERM_COLOR: always
