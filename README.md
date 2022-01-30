@@ -4,13 +4,21 @@ This miner is intended to only mine testnet Dogecoin.
 
 ## Start
 
-You will need Cargo already installed. See https://doc.rust-lang.org/cargo/getting-started/installation.html
+Download the latest release : https://github.com/rllola/dogecoin-miner-rust/releases
 
-```
-$ cargo build --release
+Notes: Only available for macOS and Linux.
+
+Unzip the executable using tar.
+
+For Linux:
+```bash
+tar -xvf dogecoin-miner-rust-linux-amd64.tar.gz
 ```
 
-You will find your executable `miner-rust` under `target/release/`.
+For macOS:
+```bash
+tar -xvf dogecoin-miner-rust-macos-amd64.tar.gz
+```
 
 Create a `miner.toml` file next to your executable with the info to connect to your Dogecoin RPC node and/or Litecoin node.
 
@@ -32,7 +40,14 @@ user = "kek"
 password = "kek"
 ```
 
+Start the executable:
+```bash
+./miner-rust
+```
+
 ## Dev
+
+You will need Cargo already installed. See https://doc.rust-lang.org/cargo/getting-started/installation.html
 
 To setup your dev environnement with your regtest nodes you will need `docker` and `docker-compose` installed.
 
@@ -43,6 +58,11 @@ $ make up
 And stop kill it
 ```bash
 $ make down
+```
+
+To run the miner.
+```bash
+$ cargo r src/main.rs
 ```
 
 ## Troubleshooting
