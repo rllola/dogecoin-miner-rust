@@ -22,9 +22,3 @@ jobs:
       uses: actions/checkout@v2
     - name: Run tests
       run: cargo test --verbose
-    - name: Build
-      run: cargo build --release --locked
-    - name: Create Archive
-      run: tar -czf dogecoin-miner-rust-${{ matrix.os }}.tar.gz ./target/release/miner-rust
-    - name: Check if archive exist
-      run: ls
