@@ -1,7 +1,7 @@
+use serde::Deserialize;
 use std::fs::File;
 use std::io::prelude::*;
 use toml;
-use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct ConfigRPC {
@@ -26,5 +26,5 @@ pub fn read_config() -> Config {
 
     let config: Config = toml::from_str(&contents).unwrap();
 
-    return config
+    return config;
 }
