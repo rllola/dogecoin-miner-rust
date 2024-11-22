@@ -406,7 +406,7 @@ pub fn merge_mine(config: &Config, pubkeyhash: &Vec<u8>) {
             &litecoin_config.password,
         );
 
-        println!("{:?}", answer);
+        println!("Blocked submitted : {:?}", answer);
     }
 
     println!("Found Dogecoin valid block");
@@ -459,5 +459,5 @@ pub fn merge_mine(config: &Config, pubkeyhash: &Vec<u8>) {
         &config.dogecoin.password,
     );
 
-    println!("{:?}", answer);
+    println!("Blocked submitted : {:?}", answer);
 }
