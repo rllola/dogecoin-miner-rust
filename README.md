@@ -1,4 +1,4 @@
-# dogecoin miner rust
+# Dogecoin Miner
 
 This miner is intended to only mine testnet Dogecoin.
 
