@@ -1,4 +1,4 @@
-name: Build and create release
+name: Build binary
 
 on:
   push:
@@ -9,28 +9,8 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  release:
-    name: Create Release
-    
-    steps:
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: true
-
-    runs-on: ubuntu-latest
-
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-
   build:
-    name: Build Artefacts
-    needs: release
+    name: Build Binary
     
     strategy:
       fail-fast: false
@@ -46,19 +26,7 @@ jobs:
     steps:
     - name: Checkout Repo 
       uses: actions/checkout@v4
-    - name: Run Tests
-      run: cargo test --verbose
     - name: Build
       run: cargo build --release --locked
     - name: Create Archive
       run: tar -czf ${{ matrix.asset_name }}.tar.gz ./target/release/miner-rust
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.release.outputs.upload_url }}
-        asset_path: ./${{ matrix.asset_name }}.tar.gz
-        asset_name: ${{ matrix.asset_name }}.tar.gz
-        asset_content_type: application/gzip 
