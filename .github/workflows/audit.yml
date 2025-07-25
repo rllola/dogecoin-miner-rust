@@ -7,9 +7,11 @@ on:
     paths:
       - 'Cargo.toml'
       - 'Cargo.lock'
+      - '.cargo/audit.toml'
+      - '.github/workflows/audit.yml'
 
 jobs:
-  security_audit:
+  audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
