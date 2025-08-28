@@ -1,4 +1,4 @@
-name: Build binary
+name: Build Binaries
 
 on:
   push:
@@ -10,8 +10,7 @@ env:
 
 jobs:
   build:
-    name: Build Binary
-    
+    name: Build Binaries
     strategy:
       fail-fast: false
       matrix:
@@ -20,13 +19,23 @@ jobs:
             asset_name: dogecoin-miner-rust-linux-amd64
           - os: macos-latest
             asset_name: dogecoin-miner-rust-macos-amd64
-
     runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout Repo 
       uses: actions/checkout@v4
+    - uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - name: Build
       run: cargo build --release --locked
-    - name: Create Archive
-      run: tar -czf ${{ matrix.asset_name }}.tar.gz ./target/release/miner-rust
+    - uses: actions/upload-artifact@v4
+      with:
+        name: dogecoin-miner-${{ github.ref }}-${{ matrix.asset_name }}.zip
+        path: ./target/release/miner-rust
+        retention-days: 1
