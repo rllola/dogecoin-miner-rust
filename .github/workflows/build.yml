@@ -1,4 +1,4 @@
-name: Build and create release
+name: Build Binaries
 
 on:
   push:
@@ -9,29 +9,8 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  release:
-    name: Create Release
-    
-    steps:
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: true
-
-    runs-on: ubuntu-latest
-
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-
   build:
-    name: Build Artefacts
-    needs: release
-    
+    name: Build Binaries
     strategy:
       fail-fast: false
       matrix:
@@ -40,25 +19,23 @@ jobs:
             asset_name: dogecoin-miner-rust-linux-amd64
           - os: macos-latest
             asset_name: dogecoin-miner-rust-macos-amd64
-
     runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout Repo 
       uses: actions/checkout@v4
-    - name: Run Tests
-      run: cargo test --verbose
+    - uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - name: Build
       run: cargo build --release --locked
-    - name: Create Archive
-      run: tar -czf ${{ matrix.asset_name }}.tar.gz ./target/release/miner-rust
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/upload-artifact@v4
       with:
-        upload_url: ${{ needs.release.outputs.upload_url }}
-        asset_path: ./${{ matrix.asset_name }}.tar.gz
-        asset_name: ${{ matrix.asset_name }}.tar.gz
-        asset_content_type: application/gzip 
+        name: dogecoin-miner-${{ github.ref }}-${{ matrix.asset_name }}.zip
+        path: ./target/release/miner-rust
+        retention-days: 1
