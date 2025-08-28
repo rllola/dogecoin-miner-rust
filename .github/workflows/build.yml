@@ -8,6 +8,9 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build Binaries
@@ -39,3 +42,15 @@ jobs:
         name: ${{ matrix.asset_name }}-${{ github.ref_name }}.zip
         path: ./target/release/miner-rust
         retention-days: 1
+
+  release:
+    name: Create Draft Release
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v5
+      - name: Create draft
+        run: gh release upload ${{github.ref_name}} dogecoin-miner-rust-linux-amd64-${{github.ref_name}}.zip dogecoin-miner-rust-macos-amd64-${{github.ref_name}}.zip -d --generate-notes
+        env:
+          GITHUB_TOKEN: ${{ github.TOKEN }}
