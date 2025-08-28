@@ -36,6 +36,6 @@ jobs:
       run: cargo build --release --locked
     - uses: actions/upload-artifact@v4
       with:
-        name: dogecoin-miner-${{ github.ref }}-${{ matrix.asset_name }}.zip
+        name: ${{ matrix.asset_name }}-${{ github.ref_name }}.zip
         path: ./target/release/miner-rust
         retention-days: 1
