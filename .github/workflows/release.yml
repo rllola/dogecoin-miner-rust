@@ -1,0 +1,17 @@
+name: Prepare release
+
+on:
+  release:
+    types: [created]
+
+
+jobs:
+  release:
+    name: Upload binaries to release
+
+    steps:
+      - uses: actions/download-artifact@v5
+        with: 
+          run-id: 18940992
+      - run: ls
+      - run: gh release upload ${{ github.ref_name }} dogecoin-miner-rust-linux-amd64-${{ github.ref_name }}.zip dogecoin-miner-rust-macos-amd64-${{ github.ref_name }}.zip
