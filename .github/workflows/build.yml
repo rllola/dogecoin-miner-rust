@@ -41,7 +41,6 @@ jobs:
       run: tar -czf ${{ matrix.asset_name }}-${{ github.ref_name }}.tar.gz ./target/release/miner-rust
     - uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.asset_name }}-${{ github.ref_name }}.tar.gz
         path: ./${{ matrix.asset_name }}-${{ github.ref_name }}.tar.gz
         retention-days: 1
 
