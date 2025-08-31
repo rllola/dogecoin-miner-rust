@@ -37,10 +37,12 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - name: Build
       run: cargo build --release --locked
+    - name: Create archive
+      run: tar -czf ${{ matrix.asset_name }}-${{ github.ref_name }}.tar.gz ./target/release/miner-rust
     - uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.asset_name }}-${{ github.ref_name }}.zip
-        path: ./target/release/miner-rust
+        name: ${{ matrix.asset_name }}-${{ github.ref_name }}
+        path: ./${{ matrix.asset_name }}-${{ github.ref_name }}.tar.gz
         retention-days: 1
 
   release:
@@ -51,7 +53,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4 # Needed so `gh release create` works
       - uses: actions/download-artifact@v5
+      - run: ls -lh
       - name: Create draft
-        run: gh release create ${{github.ref_name}} dogecoin-miner-rust-linux-amd64-${{github.ref_name}}.zip dogecoin-miner-rust-macos-amd64-${{github.ref_name}}.zip -d --generate-notes
+        run: gh release create ${{github.ref_name}} dogecoin-miner-rust-linux-amd64-${{github.ref_name}}/dogecoin-miner-rust-linux-amd64-${{github.ref_name}}.tar.gz dogecoin-miner-rust-macos-amd64-${{github.ref_name}}/dogecoin-miner-rust-macos-amd64-${{github.ref_name}}.tar.gz -d --generate-notes
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
