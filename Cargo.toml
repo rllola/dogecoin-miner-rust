@@ -1,6 +1,5 @@
 [package]
 name = "miner-rust"
-version = "0.2.7"
 authors = ["rllola <rllola80@gmail.com>"]
 edition = "2024"
 

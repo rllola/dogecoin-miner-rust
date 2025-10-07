@@ -642,7 +642,7 @@ checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
 
 [[package]]
 name = "miner-rust"
-version = "0.2.7"
+version = "0.0.0"
 dependencies = [
  "hex 0.4.3",
  "hmac-sha256",
