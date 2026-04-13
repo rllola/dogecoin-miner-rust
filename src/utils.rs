@@ -1,6 +1,4 @@
-// Way faster with c bindings version !!!
 use koibumi_base58 as base58;
-use rust_scrypt;
 use std::result::Result;
 
 pub fn double_hash_256(message: &Vec<u8>) -> [u8; 32] {
@@ -60,11 +58,10 @@ pub fn compact_size(size: usize) -> Vec<u8> {
 pub fn scrypt_hasher(block: &Vec<u8>) -> [u8; 32] {
     let mut scrypt_hash: [u8; 32] = [0; 32];
 
-    // Got here https://litecoin.info/index.php/Scrypt
-    // N = 1024
-    let params = rust_scrypt::ScryptParams::new(1024, 1, 1);
-    rust_scrypt::scrypt(&block, &block, &params, &mut scrypt_hash);
-    // REVIEW : need to reverse it ?
+    // Dogecoin/Litecoin scrypt params: N=1024 (log2=10), r=1, p=1
+    // https://litecoin.info/index.php/Scrypt
+    let params = scrypt::Params::new(10, 1, 1, 32).unwrap();
+    scrypt::scrypt(block, block, &params, &mut scrypt_hash).unwrap();
     scrypt_hash.reverse();
 
     scrypt_hash
