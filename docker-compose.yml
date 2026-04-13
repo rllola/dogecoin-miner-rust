@@ -1,8 +1,7 @@
-version: "3.2"
-
 services:
   litecoind-alpha:
     build: provision/litecoind/.
+    container_name: litecoind-alpha
     networks:
       vpcbr:
         ipv4_address: 10.5.0.2
@@ -13,6 +12,7 @@ services:
 
   litecoind-beta:
     build: provision/litecoind/.
+    container_name: litecoind-beta
     networks:
       vpcbr:
         ipv4_address: 10.5.0.3
@@ -23,6 +23,7 @@ services:
 
   dogecoind-alpha:
     build: provision/dogecoind/.
+    container_name: dogecoind-alpha
     networks:
       vpcbr:
         ipv4_address: 10.5.0.4
@@ -33,6 +34,7 @@ services:
 
   dogecoind-beta:
     build: provision/dogecoind/.
+    container_name: dogecoind-beta
     networks:
       vpcbr:
         ipv4_address: 10.5.0.5
