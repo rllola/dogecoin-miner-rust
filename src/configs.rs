@@ -19,8 +19,8 @@ pub struct Config {
     pub litecoin: Option<ConfigRPC>,
 }
 
-pub fn read_config() -> Config {
-    let mut file = File::open("miner.toml").expect("miner.toml file required");
+pub fn read_config(config_path: &String) -> Config {
+    let mut file = File::open(config_path).expect("miner.toml file required");
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
 
