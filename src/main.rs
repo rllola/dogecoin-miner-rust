@@ -1,4 +1,4 @@
-use clap::{arg, value_parser, Command};
+use clap::{Command, arg, value_parser};
 
 mod configs;
 mod miner;
@@ -8,13 +8,16 @@ mod utils;
 fn main() {
     let matches = Command::new("Miner")
         .about("Dogecoin miner to mine testnet. It also support merge mining.")
-        .arg(arg!(-c --config <FILE> "Specify configuation file.")
+        .arg(
+            arg!(-c --config <FILE> "Specify configuation file.")
                 .value_parser(value_parser!(String))
                 .default_value("./miner.toml"),
         )
         .get_matches();
 
-    let config_path = matches.get_one::<String>("config").expect("config file path to be specified or default to './miner.toml'");
+    let config_path = matches
+        .get_one::<String>("config")
+        .expect("config file path to be specified or default to './miner.toml'");
 
     let config = configs::read_config(config_path);
 
