@@ -1,8 +1,7 @@
 [package]
-name = "miner-rust"
+name = "miner"
 authors = ["rllola <rllola80@gmail.com>"]
 edition = "2024"
-
 
 [dependencies]
 reqwest = { version = "0.13", features = ["blocking","json"] }
@@ -20,3 +19,20 @@ criterion = { version = "0.5", features = ["html_reports"] }
 [[bench]]
 name = "scrypt_bench"
 harness = false
+
+[profile.release]
+# Maximum compiler optimizations (default for release, made explicit)
+opt-level = 3
+# Link-Time Optimization across all crates — allows inlining and optimizing
+# across crate boundaries, significant gains for compute-heavy hashing code.
+# Increases compile time but produces faster binaries.
+lto = "fat"
+# Merge all code into a single unit so the compiler can apply more aggressive
+# optimizations. Slower to compile but faster at runtime.
+codegen-units = 1
+# Abort immediately on panic instead of unwinding the stack.
+# Smaller binary and removes unwinding overhead — fine for a miner where
+# a panic is unrecoverable anyway.
+panic = "abort"
+# Strip debug symbols from the binary for a smaller output.
+strip = true

@@ -232,7 +232,7 @@ pub fn merge_mine(config: &Config, pubkeyhash: &Vec<u8>) {
         &litecoin_url,
         &litecoin_config.user,
         &litecoin_config.password,
-        Some(json!({"rules": ["segwit"]})),
+        Some(json!({"rules": ["segwit", "mweb"]})),
     );
     println!("{:?}", litecoin_block_template);
 
@@ -251,6 +251,8 @@ pub fn merge_mine(config: &Config, pubkeyhash: &Vec<u8>) {
 
     let index = hex::decode("ffffffff").unwrap();
     litecoin_coinbase_tx.extend_from_slice(&index);
+
+    dbg!(&litecoin_block_template);
 
     let height = litecoin_block_template["result"]["height"]
         .as_u64()

@@ -2,6 +2,7 @@ services:
   litecoind-alpha:
     build: provision/litecoind/.
     container_name: litecoind-alpha
+    command: ["-addnode=10.5.0.3"]
     networks:
       vpcbr:
         ipv4_address: 10.5.0.2
@@ -13,6 +14,7 @@ services:
   litecoind-beta:
     build: provision/litecoind/.
     container_name: litecoind-beta
+    command: ["-addnode=10.5.0.2"]
     networks:
       vpcbr:
         ipv4_address: 10.5.0.3
@@ -24,6 +26,7 @@ services:
   dogecoind-alpha:
     build: provision/dogecoind/.
     container_name: dogecoind-alpha
+    command: ["-addnode=10.5.0.5"]
     networks:
       vpcbr:
         ipv4_address: 10.5.0.4
@@ -35,6 +38,7 @@ services:
   dogecoind-beta:
     build: provision/dogecoind/.
     container_name: dogecoind-beta
+    command: ["-addnode=10.5.0.4"]
     networks:
       vpcbr:
         ipv4_address: 10.5.0.5
