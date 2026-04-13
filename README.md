@@ -42,7 +42,7 @@ password = "kek"
 
 Start the executable:
 ```bash
-./miner-rust
+./miner
 ```
 
 ## Dev
@@ -57,12 +57,12 @@ $ make up
 
 And stop kill it
 ```bash
-$ make down
+$ make kill
 ```
 
 To run the miner.
 ```bash
-$ cargo r src/main.rs
+$ cargo r 
 ```
 
 ## Troubleshooting
