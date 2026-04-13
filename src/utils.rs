@@ -1,4 +1,3 @@
-use koibumi_base58 as base58;
 use std::result::Result;
 
 pub fn double_hash_256(message: &Vec<u8>) -> [u8; 32] {
@@ -98,8 +97,8 @@ pub fn coinbase_merkle_links(merkle_tree: &Vec<[u8; 32]>) -> Vec<[u8; 32]> {
     coinbase_merkle_proofs
 }
 
-pub fn address_to_pubkeyhash(address: &String) -> Result<Vec<u8>, base58::InvalidCharacter> {
-    let tmp = base58::decode(address)?;
+pub fn address_to_pubkeyhash(address: &String) -> Result<Vec<u8>, bs58::decode::Error> {
+    let tmp = bs58::decode(address).into_vec()?;
 
     Ok(tmp[1..21].to_vec())
 }

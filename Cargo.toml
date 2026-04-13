@@ -10,8 +10,8 @@ serde_json = "1.0"
 hex = "0.4"
 hmac-sha256 = "1.1"
 scrypt = "0.11"
-toml = "0.9"
-koibumi-base58 = "0.0.2"
+toml = "1.1"
+bs58 = "0.5"
 
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
